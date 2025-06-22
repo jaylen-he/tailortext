@@ -204,7 +204,6 @@ document.addEventListener('click', (e) => {
 // Sound button functionality
 const backBtn = document.querySelector('.back-btn');
 backBtn.addEventListener('click', () => {
-    alert('back pressed');
     currentWordIndex = (currentWordIndex - 1) % words.length;
 
     if (currentMode === 'learn') {
@@ -218,7 +217,6 @@ backBtn.addEventListener('click', () => {
 // Next button functionality
 const nextBtn = document.querySelector('.next-btn');
 nextBtn.addEventListener('click', () => {
-    alert('next button')
     currentWordIndex = (currentWordIndex + 1) % words.length;
 
     if (currentMode === 'learn') {
