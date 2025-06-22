@@ -11,20 +11,67 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+    padding: '1rem'
+  };
+
+  const modalStyle: React.CSSProperties = {
+    backgroundColor: 'white',
+    padding: '1.5rem',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: '500px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  };
+
+  const headerStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '1rem'
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: '1.25rem',
+    fontWeight: '600'
+  };
+  
+  const closeButtonStyle: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    fontSize: '1.5rem',
+    cursor: 'pointer',
+    padding: '0.25rem',
+    lineHeight: '1'
+  };
+
+
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
-      onClick={onClose} // Close on overlay click
+      style={overlayStyle}
+      onClick={onClose} 
     >
       <div 
-        className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal content
+        style={modalStyle}
+        onClick={(e) => e.stopPropagation()} 
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-sky-700">{title}</h2>
+        <div style={headerStyle}>
+          <h2 style={titleStyle}>{title}</h2>
           <button 
             onClick={onClose} 
-            className="text-slate-500 hover:text-slate-700 text-2xl"
+            style={closeButtonStyle}
             aria-label="Close modal"
           >
             &times;

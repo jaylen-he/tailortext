@@ -2,32 +2,30 @@
 import React, { useState, FormEvent, useEffect } from 'react';
 
 interface QuizQuestionCardProps {
-  wordToGuess: string; // This will be the word in the target language
-  correctAnswer: string; // This will be the English translation
+  wordToGuess: string; 
+  correctAnswer: string;
   onSubmitAnswer: (isCorrect: boolean) => void;
 }
 
-const QuizQuestionCard: React.FC<QuizQuestionCardProps> = ({
+const QuizQuestionCard = ({
   wordToGuess,
   correctAnswer,
   onSubmitAnswer,
-}) => {
+}: QuizQuestionCardProps): JSX.Element => {
   const [userAnswer, setUserAnswer] = useState<string>('');
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
-  // Effect to reset state when the question changes
   useEffect(() => {
     setUserAnswer('');
     setFeedback(null);
     setIsSubmitted(false);
-  }, [wordToGuess, correctAnswer]); // Depend on wordToGuess and correctAnswer to ensure reset for new question
+  }, [wordToGuess, correctAnswer]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitted) return;
 
-    // Normalize answers for comparison: trim whitespace and convert to lowercase
     const normalizedUserAnswer = userAnswer.trim().toLowerCase();
     const normalizedCorrectAnswer = correctAnswer.trim().toLowerCase();
     
@@ -36,36 +34,41 @@ const QuizQuestionCard: React.FC<QuizQuestionCardProps> = ({
     if (isCorrect) {
       setFeedback('Correct! 🎉');
     } else {
-      setFeedback(`Not quite. The correct English translation is: ${correctAnswer}`);
+      setFeedback(`Not quite. The correct English translation is: \${correctAnswer}`);
     }
     onSubmitAnswer(isCorrect);
   };
 
   return (
-    <div className="p-4 border border-slate-200 rounded-lg shadow-sm bg-slate-50">
-      <p className="text-lg font-medium text-slate-700 mb-2">
-        What is the English translation of: <strong className="text-sky-600">{wordToGuess}</strong>?
+    <div style={{ padding: '1rem', border: '1px solid #ddd' }}>
+      <p style={{ marginBottom: '0.5rem' }}>
+        What is the English translation of: <strong>{wordToGuess}</strong>?
       </p>
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <input
           type="text"
           value={userAnswer}
           onChange={(e) => setUserAnswer(e.target.value)}
           placeholder="Type your English translation"
           disabled={isSubmitted}
-          className="w-full p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100"
+          style={{ width: 'calc(100% - 1rem)', padding: '0.5rem', border: '1px solid #ccc' }}
           aria-label="Your English translation"
         />
         <button
           type="submit"
           disabled={isSubmitted || !userAnswer.trim()}
-          className="w-full px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed"
+          style={{ padding: '0.5rem 1rem' }}
         >
           {isSubmitted ? 'Answered' : 'Submit Answer'}
         </button>
       </form>
       {feedback && (
-        <p className={`mt-3 text-sm p-2 rounded-md ${feedback.startsWith('Correct') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <p style={{ 
+            marginTop: '0.75rem', 
+            padding: '0.5rem', 
+            border: `1px solid ${feedback.startsWith('Correct') ? 'green' : 'red'}`,
+            color: feedback.startsWith('Correct') ? 'green' : 'red'
+        }}>
           {feedback}
         </p>
       )}

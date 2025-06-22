@@ -46,7 +46,7 @@ export const getWordDetailsFromGemini = async (
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: GEMINI_MODEL_NAME,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      contents: { parts: [{ text: prompt }] }, // Corrected contents structure
       config: {
         responseMimeType: "application/json",
       },
@@ -73,6 +73,7 @@ export const getWordDetailsFromGemini = async (
         throw new Error("Received malformed data from Gemini API (missing mandatory fields).");
     }
     
+    // Construct the WordDetails object, including optional fields
     // Construct the WordDetails object, including optional fields
     const wordDetails: WordDetails = {
         definition: parsedData.definition,

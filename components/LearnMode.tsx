@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { WordEntry, LanguageOption, WordDetails } from '../types';
+import { WordEntry, LanguageOption } from '../types';
 import { SUPPORTED_LANGUAGES } from '../constants';
 import { getWordDetailsFromGemini } from '../services/geminiService';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -17,7 +17,7 @@ interface LearnModeProps {
   onCaptureText: () => Promise<void>;
 }
 
-const LearnMode: React.FC<LearnModeProps> = ({
+const LearnMode = ({
   wordLibrary,
   targetLanguage,
   onSetTargetLanguage,
@@ -25,7 +25,7 @@ const LearnMode: React.FC<LearnModeProps> = ({
   onUpdateWord,
   onRemoveWord,
   onCaptureText,
-}) => {
+}: LearnModeProps): JSX.Element => {
   const [newWordInput, setNewWordInput] = useState<string>('');
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,12 +47,11 @@ const LearnMode: React.FC<LearnModeProps> = ({
 
   const handleFetchAndShowDetails = useCallback(async (word: WordEntry) => {
     setError(null);
-    setSelectedWord(word); // Show word immediately, details will load
+    setSelectedWord(word);
     setIsModalOpen(true);
 
-    // Check if details for the current target language are already fetched
     if (word.detailsByLanguage && word.detailsByLanguage[targetLanguage]) {
-      return; // Details already exist, no need to fetch
+      return; 
     }
 
     setIsLoadingDetails(true);
@@ -66,11 +65,10 @@ const LearnMode: React.FC<LearnModeProps> = ({
         },
       };
       await onUpdateWord(updatedWord);
-      setSelectedWord(updatedWord); // Update selected word with new details
+      setSelectedWord(updatedWord); 
     } catch (err: any) {
       console.error("Error fetching details:", err);
       setError(err.message || "Failed to load word details.");
-      // Keep modal open to show error, or close if preferred
     } finally {
       setIsLoadingDetails(false);
     }
@@ -78,41 +76,35 @@ const LearnMode: React.FC<LearnModeProps> = ({
 
 
   return (
-    <div className="space-y-4">
-      <div className="p-4 bg-white shadow rounded-lg">
-        <h2 className="text-xl font-semibold text-sky-700 mb-3">Add New Word</h2>
-        <form onSubmit={handleAddWordManually} className="flex gap-2 mb-2">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{ padding: '1rem', border: '1px solid #ccc' }}>
+        <h2>Add New Word</h2>
+        <form onSubmit={handleAddWordManually} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
           <input
             type="text"
             value={newWordInput}
             onChange={(e) => setNewWordInput(e.target.value)}
             placeholder="Enter a word"
-            className="flex-grow p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"
+            style={{ flexGrow: 1, padding: '0.5rem', border: '1px solid #ddd' }}
           />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors"
-          >
+          <button type="submit" style={{ padding: '0.5rem 1rem' }}>
             Add
           </button>
         </form>
-        <button
-          onClick={onCaptureText}
-          className="w-full px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors"
-        >
+        <button onClick={onCaptureText} style={{ width: '100%', padding: '0.5rem 1rem' }}>
           Capture Highlighted Text
         </button>
       </div>
 
-      <div className="p-4 bg-white shadow rounded-lg">
-        <label htmlFor="language-select" className="block text-sm font-medium text-slate-700 mb-1">
+      <div style={{ padding: '1rem', border: '1px solid #ccc' }}>
+        <label htmlFor="language-select" style={{ display: 'block', marginBottom: '0.25rem' }}>
           Learn in:
         </label>
         <select
           id="language-select"
           value={targetLanguage}
           onChange={(e) => onSetTargetLanguage(e.target.value as LanguageOption)}
-          className="w-full p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"
+          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd' }}
         >
           {SUPPORTED_LANGUAGES.map((lang) => (
             <option key={lang} value={lang}>
@@ -122,25 +114,25 @@ const LearnMode: React.FC<LearnModeProps> = ({
         </select>
       </div>
       
-      {error && <p className="text-red-500 text-sm p-2 bg-red-100 rounded-md">{error}</p>}
+      {error && <p style={{ color: 'red', padding: '0.5rem', border: '1px solid red' }}>{error}</p>}
 
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-sky-700 mt-4">Your Word Library ({wordLibrary.length})</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <h3>Your Word Library ({wordLibrary.length})</h3>
         {wordLibrary.length === 0 ? (
-          <p className="text-slate-500 text-center py-4">Your library is empty. Add some words to start learning!</p>
+          <p style={{ textAlign: 'center', padding: '1rem' }}>Your library is empty. Add some words to start learning!</p>
         ) : (
-          <ul className="max-h-80 overflow-y-auto bg-white rounded-lg shadow divide-y divide-slate-200">
+          <ul style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', listStyle: 'none', padding: 0 }}>
             {wordLibrary.map((word) => (
-              <li key={word.id} className="p-3 hover:bg-slate-50 flex justify-between items-center">
+              <li key={word.id} style={{ padding: '0.75rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span 
-                  className="text-slate-800 cursor-pointer hover:text-sky-600 flex-grow"
+                  style={{ cursor: 'pointer', flexGrow: 1 }}
                   onClick={() => handleFetchAndShowDetails(word)}
                 >
                   {word.originalWord}
                 </span>
                 <button 
                   onClick={() => onRemoveWord(word.id)}
-                  className="ml-2 text-red-500 hover:text-red-700 text-xs"
+                  style={{ marginLeft: '0.5rem', color: 'red', fontSize: '0.8rem', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label={`Remove ${word.originalWord}`}
                 >
                   Remove
@@ -154,16 +146,16 @@ const LearnMode: React.FC<LearnModeProps> = ({
       {isModalOpen && selectedWord && (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Details for "${selectedWord.originalWord}"`}>
           {isLoadingDetails ? (
-            <div className="flex justify-center items-center h-32">
+            <div>
               <LoadingSpinner /> 
-              <span className="ml-2">Loading details...</span>
+              <span>Loading details...</span>
             </div>
           ) : (
             <WordCard 
-              wordDetails={selectedWord.detailsByLanguage?.[targetLanguage]} 
               originalWord={selectedWord.originalWord}
+              wordDetails={selectedWord.detailsByLanguage?.[targetLanguage]} 
               targetLanguage={targetLanguage}
-              error={!selectedWord.detailsByLanguage?.[targetLanguage] ? error : null} // Show error if details couldn't load
+              error={!selectedWord.detailsByLanguage?.[targetLanguage] ? error : null}
             />
           )}
         </Modal>
