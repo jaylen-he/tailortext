@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "TailorText",
+  "version": "1.2",
+  "description": "A language learning extension integrated, tailored to your daily life",
+  "permissions": ["activeTab", "scripting", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "/src/popup.html",
+    "default_icon": {
+      "16": "dolphin.jpg",
+      "48": "dolphin.jpg",
+      "128": "dolphin.jpg"
+    }
+  },
+  "icons": {
+    "16": "dolphin.jpg",
+    "48": "dolphin.jpg",
+    "128": "dolphin.jpg"
+  }
+  }
