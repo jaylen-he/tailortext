@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <title>TailorText</title>
+</head>
+<body>
+    <div class="header">
+        <img src="dolphin.jpg" class="logo"></img>
+        <h1 class="title">Tailor<span class="title-accent">Text</span></h1>
+    </div>
+
+    <div class="mode-selector">
+        <button class="mode-btn active">Learn Mode</button>
+        <button class="mode-btn">Quiz Mode</button>
+    </div>
+
+    <div class="language-selector">
+        <select class="language-dropdown">
+            <option value="spanish">Spanish</option>
+            <option value="french">French</option>
+            <option value="german">German</option>
+            <option value="italian">Italian</option>
+            <option value="portuguese">Portuguese</option>
+        </select>
+    </div>
+
+    <div class="word-card">
+        <div class="main-word">Hola</div>
+        
+        <div class="example-section">
+            <div class="section-label">Example Sentence:</div>
+            <div class="section-content">Hola, buenos días</div>
+        </div>
+        
+        <div class="example-section">
+            <div class="section-label">English Translation:</div>
+            <div class="section-content">Hello, good morning</div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-btn sound-btn">
+            <span class="icon">🔊</span>
+            Sound
+        </button>
+        <button class="action-btn next-btn">
+            <span class="icon-arrow">↻</span>
+            Next
+        </button>
+    </div>
+
+    <script>
+        // Mode selector functionality
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Sound button functionality
+        const soundBtn = document.querySelector('.sound-btn');
+        soundBtn.addEventListener('click', () => {
+            // Add pronunciation functionality here
+            console.log('Playing pronunciation...');
+        });
+
+        // Next button functionality
+        const nextBtn = document.querySelector('.next-btn');
+        nextBtn.addEventListener('click', () => {
+            // Add next word functionality here
+            console.log('Loading next word...');
+        });
+
+        const languageDropdown = document.querySelector('.language-dropdown');
+        languageDropdown.addEventListener('change', (e) => {
+            console.log('Language changed to:', e.target.value);
+        });
+    </script>
+</body>
+</html>

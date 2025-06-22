@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Rosario:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f4ff 100%);
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.title {
+    font-family: 'Rosario', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: #2c3e50;
+}
+
+.title-accent {
+    color: #4a90e2;
+    font-weight: 500;
+}
+
+.mode-selector {
+    display: flex;
+    background: white;
+    border-radius: 25px;
+    padding: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: #4a90e2;
+    font-family: 'Roboto', sans-serif;
+}
+
+.mode-btn.active {
+    background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+    color: white;
+    box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+}
+
+.mode-btn:hover:not(.active) {
+    background: #f8f9fa;
+    color: #4a90e2;
+}
+
+.language-selector {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.language-dropdown {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    appearance: none;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    text-align-last: center;
+    -moz-text-align-last: center;
+    -webkit-text-align-last: center
+}
+
+.language-selector::after {
+    content: "▼";
+    color: #FFFFFF;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.word-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.main-word {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.example-section {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.section-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.section-content {
+    color: #4a90e2;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.sound-btn {
+    background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+    color: white;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.sound-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
+.next-btn {
+    background: linear-gradient(45deg, #5cb85c, #4cae4c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(92, 184, 92, 0.3);
+}
+
+.next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(92, 184, 92, 0.4);
+}
+
+.icon-arrow{
+    font-size: 24px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 450px) {
+    body {
+        padding: 15px;
+        width: 100%;
+    }
+    
+    .main-word {
+        font-size: 36px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+    }
+}
