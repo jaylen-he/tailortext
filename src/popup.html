@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailorText</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rosario:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 320px;
+            height: 500px;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f4ff 100%);
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .title {
+            font-family: 'Rosario', sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            color: #2c3e50;
+        }
+
+        .title-accent {
+            color: #4a90e2;
+            font-weight: 500;
+        }
+
+        .mode-selector {
+            display: flex;
+            background: white;
+            border-radius: 20px;
+            padding: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 18px;
+            width: 100%;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #4a90e2;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+            color: white;
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: #f8f9fa;
+            color: #4a90e2;
+        }
+
+        .language-selector {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .language-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            appearance: none;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            text-align-last: center;
+        }
+
+        .language-selector::after {
+            content: "▼";
+            color: #FFFFFF;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .word-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 18px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .main-word {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .example-section {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .section-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .section-content {
+            color: #4a90e2;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #5cb85c, #4cae4c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(92, 184, 92, 0.3);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(92, 184, 92, 0.4);
+        }
+
+        .icon {
+            font-size: 19px;
+        }
+
+        /* Quiz Mode Styles */
+        .quiz-question {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-option {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            background: white;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .quiz-option:hover {
+            border-color: #4a90e2;
+            background: #f8fbff;
+        }
+
+        .quiz-option.selected-correct {
+            background: linear-gradient(45deg, #5cb85c, #4cae4c);
+            color: white;
+            border-color: #4cae4c;
+        }
+
+        .quiz-option.selected-wrong {
+            background: linear-gradient(45deg, #d9534f, #c9302c);
+            color: white;
+            border-color: #c9302c;
+        }
+
+        .quiz-option.show-correct {
+            border-color: #5cb85c;
+            background: #f0f8f0;
+            color: #4cae4c;
+        }
+
+        .quiz-feedback {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .quiz-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .quiz-feedback.wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .feedback-text {
+            font-weight: 500;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="dolphin.jpg" class="logo" alt="TailorText Logo">
+        <h1 class="title">Tailor<span class="title-accent">Text</span></h1>
+    </div>
+
+    <div class="mode-selector">
+        <button class="mode-btn active">Learn Mode</button>
+        <button class="mode-btn">Quiz Mode</button>
+    </div>
+
+    <div class="language-selector">
+        <select class="language-dropdown">
+            <option value="spanish">Spanish</option>
+            <option value="french">French</option>
+            <option value="german">German</option>
+            <option value="italian">Italian</option>
+            <option value="portuguese">Portuguese</option>
+        </select>
+    </div>
+
+    <div class="word-card">
+        <!-- Learn Mode Content -->
+        <div id="learn-content">
+            <div class="main-word">Hola</div>
+
+            <div class="example-section">
+                <div class="section-label">Example Sentence:</div>
+                <div class="section-content">Hola, buenos días</div>
+            </div>
+
+            <div class="example-section">
+                <div class="section-label">English Translation:</div>
+                <div class="section-content">Hello, good morning</div>
+            </div>
+        </div>
+
+        <!-- Quiz Mode Content -->
+        <div id="quiz-content" style="display: none;">
+            <div class="quiz-question">What does "Hola" mean?</div>
+            
+            <div class="quiz-options">
+                <button class="quiz-option" data-answer="correct">Hello</button>
+                <button class="quiz-option" data-answer="wrong">Goodbye</button>
+                <button class="quiz-option" data-answer="wrong">Thank you</button>
+                <button class="quiz-option" data-answer="wrong">Please</button>
+            </div>
+
+            <div class="quiz-feedback" style="display: none;">
+                <div class="feedback-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-btn back-btn">
+            <span class="icon">⏪</span>
+            Back
+        </button>
+        <button class="action-btn next-btn">
+            <span class="icon">⏭️</span>
+            Next
+        </button>
+    </div>
+    <script type="module" src="./popup.js"></script>
+</body>
+</html>
