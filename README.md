@@ -30,7 +30,7 @@ TailorText is a Chrome extension that turns any article you're reading into an i
 2. Open Chrome and go to `chrome://extensions`
 3. Turn on **Developer mode** (top right)
 4. Click **Load unpacked**
-5. Select the folder where you placed this project
+5. Select the **dist folder
 
 ✅ The TailorText dolphin icon will appear in your extensions bar!
 
