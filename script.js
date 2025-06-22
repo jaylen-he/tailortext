@@ -100,7 +100,7 @@ document.addEventListener('click', (e) => {
         if (isCorrect) {
             e.target.classList.add('selected-correct');
             feedback.className = 'quiz-feedback correct';
-            feedbackText.textContent = 'Correct! Well done!';
+            feedbackText.textContent = 'Correct!';
         } else {
             e.target.classList.add('selected-wrong');
             // Show the correct answer
