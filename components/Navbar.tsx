@@ -9,16 +9,16 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ currentMode, onSetMode }) => {
   return (
-    <nav className="flex justify-around bg-sky-500 p-2 shadow">
+    <nav style={{ display: 'flex', justifyContent: 'space-around', padding: '0.5rem', backgroundColor: '#e0e0e0' }}>
       {(Object.values(AppMode) as AppMode[]).map((mode) => (
         <button
           key={mode}
           onClick={() => onSetMode(mode)}
-          className={`px-6 py-2 rounded-md text-sm font-medium transition-colors
-            ${currentMode === mode 
-              ? 'bg-white text-sky-600 shadow-inner' 
-              : 'text-white hover:bg-sky-400'
-            }`}
+          style={{ 
+            padding: '0.5rem 1rem', 
+            border: currentMode === mode ? '2px solid blue' : '1px solid #ccc',
+            fontWeight: currentMode === mode ? 'bold' : 'normal'
+          }}
         >
           {mode}
         </button>

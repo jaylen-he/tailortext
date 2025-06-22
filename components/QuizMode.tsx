@@ -11,9 +11,9 @@ interface QuizModeProps {
   onUpdateWord: (word: WordEntry) => Promise<void>;
 }
 
-const QuizMode: React.FC<QuizModeProps> = ({ wordLibrary, targetLanguage, onUpdateWord }) => {
+const QuizMode = ({ wordLibrary, targetLanguage, onUpdateWord }: QuizModeProps): JSX.Element => {
   const [quizWords, setQuizWords] = useState<WordEntry[]>([]);
-  const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1); // Actual index in quizWords
+  const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1);
   const [currentQuizWordData, setCurrentQuizWordData] = useState<{ wordToGuess: string; correctAnswer: string } | null>(null);
   const [isLoadingWord, setIsLoadingWord] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,32 +32,22 @@ const QuizMode: React.FC<QuizModeProps> = ({ wordLibrary, targetLanguage, onUpda
   };
 
   const prepareQuizWord = useCallback(async (wordEntry: WordEntry): Promise<{ wordToGuess: string; correctAnswer: string } | null> => {
-    // Note: setError is not called here directly for individual word load failures,
-    // as the calling function will handle skipping.
-    // A general error might be set if all words fail.
     let details = wordEntry.detailsByLanguage?.[targetLanguage];
-
     if (!details || !details.translation) {
-      // setIsLoadingWord(true); // Handled by caller
       try {
         details = await getWordDetailsFromGemini(wordEntry.originalWord, targetLanguage);
         const updatedWordEntry: WordEntry = {
           ...wordEntry,
-          detailsByLanguage: {
-            ...wordEntry.detailsByLanguage,
-            [targetLanguage]: details,
-          },
+          detailsByLanguage: { ...wordEntry.detailsByLanguage, [targetLanguage]: details },
         };
         await onUpdateWord(updatedWordEntry);
+        // `details` variable is updated, subsequent check will use it.
       } catch (err: any) {
-        console.error(`Error fetching details for "${wordEntry.originalWord}" during quiz:`, err);
-        // setIsLoadingWord(false); // Handled by caller
+       console.error(`Error fetching details for "${wordEntry.originalWord}" during quiz:`, err);
         return null; 
-      } finally {
-        // setIsLoadingWord(false); // Handled by caller
       }
     }
-    
+    // This check uses `details` which might have been fetched and updated above.
     if (details && details.translation) {
         return { wordToGuess: details.translation, correctAnswer: wordEntry.originalWord };
     }
@@ -67,115 +57,83 @@ const QuizMode: React.FC<QuizModeProps> = ({ wordLibrary, targetLanguage, onUpda
 
   const loadNextQuestion = useCallback(async (startingIndex: number = currentWordIndex) => {
     setIsLoadingWord(true);
-    setError(null); // Clear previous errors before trying to load next
-    
+    setError(null);
     let nextAttemptIndex = startingIndex + 1;
     let newSkippedCount = 0;
 
     while (nextAttemptIndex < quizWords.length) {
       const wordToTry = quizWords[nextAttemptIndex];
-      if (!wordToTry || !wordToTry.originalWord.trim()) { // Basic check for invalid entry
+      if (!wordToTry || !wordToTry.originalWord.trim()) {
         console.warn("Skipping invalid word entry in quizWords.", wordToTry);
         newSkippedCount++;
         nextAttemptIndex++;
         continue;
       }
-
       const quizData = await prepareQuizWord(wordToTry);
       if (quizData) {
         setCurrentWordIndex(nextAttemptIndex);
         setCurrentQuizWordData(quizData);
         setIsLoadingWord(false);
         setSkippedWordsCount(prev => prev + newSkippedCount);
-        return; // Found and set next question
+        return; // Found a question
       } else {
         console.warn(`Skipping word "${quizWords[nextAttemptIndex]?.originalWord}" during quiz due to loading failure.`);
         newSkippedCount++;
         nextAttemptIndex++;
-        // Optionally, inform user that a word was skipped, e.g., via a temporary message
       }
     }
-
-    // If loop completes, no more loadable words
+    // If loop finishes, no more valid questions
     setSkippedWordsCount(prev => prev + newSkippedCount);
     setShowResults(true);
     setCurrentQuizWordData(null);
     setIsLoadingWord(false);
   }, [currentWordIndex, quizWords, prepareQuizWord]);
 
-
   const startQuiz = useCallback(async () => {
     if (wordLibrary.length === 0) {
         setError("Add words to your library to start a quiz!");
-        setCurrentQuizWordData(null);
-        setQuizWords([]);
-        setShowResults(false);
-        setIsLoadingWord(false);
+        setCurrentQuizWordData(null); setQuizWords([]); setShowResults(false); setIsLoadingWord(false);
         return;
     }
-    
-    setIsLoadingWord(true);
-    setError(null);
+    setIsLoadingWord(true); setError(null);
     const shuffled = shuffleArray(wordLibrary.filter(w => w.originalWord && w.originalWord.trim() !== ''));
-    
-    setQuizWords(shuffled);
-    setCurrentWordIndex(-1); // Reset index to start before the first item
-    setScore(0);
-    setAnsweredCount(0);
-    setShowResults(false);
-    setCurrentQuizWordData(null);
-    setSkippedWordsCount(0);
+    setQuizWords(shuffled); setCurrentWordIndex(-1); setScore(0); setAnsweredCount(0);
+    setShowResults(false); setCurrentQuizWordData(null); setSkippedWordsCount(0);
 
     if (shuffled.length > 0) {
-      await loadNextQuestion(-1); // Pass -1 to start search from index 0
+      await loadNextQuestion(-1);
     } else {
       setError(wordLibrary.length > 0 ? "No valid words available for a quiz." : "Your library is empty or has no valid words.");
-      setIsLoadingWord(false);
-      setShowResults(false); // Ensure results aren't shown if no questions
+      setIsLoadingWord(false); setShowResults(false);
     }
   }, [wordLibrary, loadNextQuestion]);
 
   useEffect(() => {
-    // This effect will run when the component mounts or when targetLanguage changes,
-    // as startQuiz's dependencies include wordLibrary and targetLanguage (via loadNextQuestion -> prepareQuizWord).
     startQuiz();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetLanguage, wordLibrary]); // Explicitly depend on wordLibrary for full quiz restart on change
-
+  }, [targetLanguage, wordLibrary]); // Rerun quiz if target language or library changes
 
   const handleAnswerSubmit = (isCorrect: boolean) => {
-    if (isCorrect) {
-      setScore(prev => prev + 1);
-    }
+    if (isCorrect) setScore(prev => prev + 1);
     setAnsweredCount(prev => prev + 1);
-    
-    // Give feedback time, then load next
     setTimeout(() => {
       if (currentWordIndex < quizWords.length -1 || quizWords.slice(currentWordIndex + 1).some(w => w.originalWord.trim() !== '')) {
          loadNextQuestion();
       } else {
-         setShowResults(true); // No more potential words
-         setCurrentQuizWordData(null);
+         setShowResults(true); setCurrentQuizWordData(null);
       }
     }, 1500); 
   };
   
   if (showResults) {
     return (
-      <div className="p-4 bg-white shadow rounded-lg text-center">
-        <h2 className="text-2xl font-bold text-sky-700 mb-4">Quiz Complete!</h2>
-        <p className="text-lg text-slate-700 mb-1">
-          Your score: <span className="font-semibold">{score}</span> / <span className="font-semibold">{answeredCount}</span>
-        </p>
+      <div style={{ padding: '1rem', border: '1px solid #ccc', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p>Your score: <strong>{score}</strong> / <strong>{answeredCount}</strong></p>
         {skippedWordsCount > 0 && (
-            <p className="text-sm text-slate-500 mb-2">
-                ({skippedWordsCount} word{skippedWordsCount > 1 ? 's' : ''} skipped due to loading issues)
-            </p>
+            <p style={{fontSize: '0.9rem', color: '#555'}}>({skippedWordsCount} word{skippedWordsCount > 1 ? 's' : ''} skipped due to loading issues)</p>
         )}
-        <button
-          onClick={startQuiz}
-          className="mt-4 px-6 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors"
-        >
+        <button onClick={startQuiz} style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}>
           Play Again
         </button>
       </div>
@@ -184,40 +142,30 @@ const QuizMode: React.FC<QuizModeProps> = ({ wordLibrary, targetLanguage, onUpda
 
   if (isLoadingWord) {
     return (
-      <div className="flex flex-col items-center justify-center p-4 h-48">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', minHeight: '100px' }}>
         <LoadingSpinner />
-        <p className="mt-2 text-slate-600">Preparing question...</p>
+        <p style={{ marginTop: '0.5rem' }}>Preparing question...</p>
       </div>
     );
   }
 
-  if (error) { // General errors like "no words in library" or "all words failed to load"
+  if (error) {
      return (
-        <div className="p-4 bg-red-100 text-red-700 rounded-lg text-center">
+        <div style={{ padding: '1rem', color: 'red', border: '1px solid red', textAlign: 'center' }}>
             <p>{error}</p>
-            <button
-                onClick={startQuiz} // Allow trying to start quiz again
-                className="mt-4 px-6 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors"
-            >
-            Try Again
+            <button onClick={startQuiz} style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}>
+              Try Again
             </button>
         </div>
      );
   }
   
   if (!currentQuizWordData) {
-    // This state can be hit if all words were skipped or initial load found no questions
-    // Error state should ideally cover most of these, but as a fallback:
     return (
-        <div className="p-4 text-center">
-            <p className="text-slate-600">
-                {wordLibrary.length === 0 ? "Add words to your library to start a quiz!" : "No questions available for the quiz."}
-            </p>
+        <div style={{ padding: '1rem', textAlign: 'center' }}>
+            <p>{wordLibrary.length === 0 ? "Add words to your library to start a quiz!" : (quizWords.length > 0 ? "Finished loading questions or no more valid questions." : "No questions available.")}</p>
             {wordLibrary.length > 0 && (
-                <button
-                    onClick={startQuiz}
-                    className="mt-4 px-6 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors"
-                >
+                <button onClick={startQuiz} style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}>
                     Start Quiz
                 </button>
             )}
@@ -225,27 +173,25 @@ const QuizMode: React.FC<QuizModeProps> = ({ wordLibrary, targetLanguage, onUpda
     );
   }
   
-  // Calculate displayed question number based on answeredCount, as currentWordIndex might jump if words are skipped.
-  // Or, more simply, use answeredCount + 1 for the current question number if a question is displayed.
   const questionNumber = answeredCount + 1;
-  const totalQuestionsInSession = quizWords.length - skippedWordsCount; // A more dynamic total could be quizWords.length
+  const totalQuestions = quizWords.length - skippedWordsCount;
+
 
   return (
-    <div className="p-4 bg-white shadow rounded-lg">
-      <h2 className="text-xl font-semibold text-sky-700 mb-1">Quiz Time!</h2>
+    <div style={{ padding: '1rem', border: '1px solid #ccc' }}>
+      <h2>Quiz Time!</h2>
       {quizWords.length > 0 && (
-         <p className="text-sm text-slate-500 mb-4">
-            Question {questionNumber} (Targeting ~{quizWords.length} words)
+         <p style={{ fontSize: '0.9rem', color: '#555', marginBottom: '1rem' }}>
+            Question {questionNumber} of {totalQuestions > 0 ? totalQuestions : quizWords.length} (Targeting ~{quizWords.length} words initially)
         </p>
       )}
-      
       <QuizQuestionCard
           wordToGuess={currentQuizWordData.wordToGuess}
           correctAnswer={currentQuizWordData.correctAnswer}
           onSubmitAnswer={handleAnswerSubmit}
       />
-       <div className="mt-4 text-right">
-        <p className="text-lg font-semibold text-slate-700">Score: {score}/{answeredCount}</p>
+       <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+        <p>Score: {score}/{answeredCount}</p>
       </div>
     </div>
   );

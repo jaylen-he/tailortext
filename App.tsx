@@ -8,7 +8,7 @@ import QuizMode from './components/QuizMode';
 import { getWords, saveWords, getTargetLanguage, saveTargetLanguage } from './services/storageService';
 import { LoadingSpinner } from './components/LoadingSpinner';
 
-const App: React.FC = () => {
+const App = (): JSX.Element => {
   const [wordLibrary, setWordLibrary] = useState<WordEntry[]>([]);
   const [currentMode, setCurrentMode] = useState<AppMode>(AppMode.LEARN);
   const [targetLanguage, setTargetLanguageState] = useState<LanguageOption>(SUPPORTED_LANGUAGES[0]);
@@ -17,13 +17,13 @@ const App: React.FC = () => {
   const [apiKeyExists, setApiKeyExists] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check for API key. The prompt mandates using process.env.API_KEY.
-    // This variable is assumed to be pre-configured and accessible.
-    if (process.env.API_KEY) { 
+    console.log("App.tsx: App component mounted and initial useEffect running");
+    if (process.env.API_KEY) {
+        console.log("App.tsx: API_KEY found in process.env");
         setApiKeyExists(true);
     } else {
-        console.warn("API_KEY from process.env is not available. Gemini features may not work. This app assumes API_KEY is set in the execution environment.");
-        setError("Gemini API Key is not configured. Please ensure API_KEY environment variable is set for the application environment.");
+        console.warn("App.tsx: API_KEY from process.env is NOT available. Gemini features may not work.");
+        setError("Gemini API Key is not configured. This key should be embedded during the build process.");
         setApiKeyExists(false);
     }
   }, []);
@@ -31,23 +31,31 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const loadInitialData = async () => {
+      console.log("App.tsx: loadInitialData started");
       setIsLoading(true);
       try {
         const storedWords = await getWords();
+        console.log("App.tsx: Stored words fetched:", storedWords.length);
         setWordLibrary(storedWords.sort((a, b) => b.dateAdded - a.dateAdded));
         const storedLang = await getTargetLanguage();
+        console.log("App.tsx: Stored language fetched:", storedLang);
         if (storedLang) {
           setTargetLanguageState(storedLang);
         }
       } catch (e) {
-        console.error("Failed to load data:", e);
+        console.error("App.tsx: Failed to load data:", e);
         setError("Could not load your saved words or preferences.");
       } finally {
+        console.log("App.tsx: loadInitialData finished");
         setIsLoading(false);
       }
     };
-    loadInitialData();
-  }, []);
+    if (apiKeyExists) { // Only load data if API key exists
+        loadInitialData();
+    } else {
+        setIsLoading(false); // Ensure loading stops if API key doesn't exist
+    }
+  }, [apiKeyExists]);
 
   const handleSetTargetLanguage = useCallback(async (lang: LanguageOption) => {
     setTargetLanguageState(lang);
@@ -61,7 +69,6 @@ const App: React.FC = () => {
     }
     if (wordLibrary.some(w => w.originalWord.toLowerCase() === originalWord.trim().toLowerCase())) {
       setError(`"${originalWord}" is already in your library.`);
-      // Clear error after a few seconds
       setTimeout(() => setError(null), 3000);
       return;
     }
@@ -74,7 +81,7 @@ const App: React.FC = () => {
     const updatedLibrary = [newWord, ...wordLibrary];
     setWordLibrary(updatedLibrary);
     await saveWords(updatedLibrary);
-    setError(null); // Clear any previous errors
+    setError(null);
   }, [wordLibrary]);
 
   const updateWordInLibrary = useCallback(async (updatedWord: WordEntry) => {
@@ -118,51 +125,47 @@ const App: React.FC = () => {
         } catch (e: any) {
             console.error("Error capturing text:", e);
             setError(`Failed to capture text: ${e.message || 'Unknown error'}`);
+
             setTimeout(() => setError(null), 5000);
         }
     } else {
         setError("This feature is only available in a Chrome extension environment.");
         setTimeout(() => setError(null), 3000);
-        // For local development without extension env, simulate adding a word
-        // addWordToLibrary("example"); 
     }
   }, [addWordToLibrary]);
 
 
-  if (isLoading) {
+  if (isLoading && !error && apiKeyExists) { // Added apiKeyExists check here too
     return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner />
-      </div>
+      <div><LoadingSpinner /></div>
     );
   }
   
   if (!apiKeyExists) {
     return (
-        <div className="p-4 h-full flex flex-col items-center justify-center text-center bg-red-100 text-red-700">
-            <h1 className="text-xl font-bold mb-4">API Key Error</h1>
-            <p>{error}</p>
-            <p className="mt-2 text-sm">Please ensure the Gemini API key (API_KEY environment variable) is correctly configured for the application environment.</p>
+        <div style={{ padding: '1rem', textAlign: 'center', color: 'red' }}>
+            <h1>API Key Error</h1>
+            <p>{error || "Gemini API Key is not configured. This key should be embedded during the build process."}</p>
+            <p>Please ensure the Gemini API key (API_KEY environment variable) was correctly configured and embedded during the build process.</p>
         </div>
     );
   }
 
-
   return (
-    <div className="flex flex-col h-full bg-slate-100 text-slate-800">
-      <header className="bg-sky-600 text-white p-4 shadow-md">
-        <h1 className="text-2xl font-bold text-center">Word Learner</h1>
+    <div>
+      <header style={{ padding: '1rem', backgroundColor: '#f0f0f0', textAlign: 'center' }}>
+        <h1>Word Learner</h1>
       </header>
 
       <Navbar currentMode={currentMode} onSetMode={setCurrentMode} />
       
-      {error && (
-        <div className="m-2 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md text-sm">
+      {error && !isLoading && ( // Ensure error message doesn't show during initial API key check loading
+        <div style={{ margin: '0.5rem', padding: '0.75rem', color: 'red', border: '1px solid red' }}>
           {error}
         </div>
       )}
 
-      <main className="flex-grow p-4 overflow-y-auto">
+      <main style={{ padding: '1rem', overflowY: 'auto' }}>
         {currentMode === AppMode.LEARN && (
           <LearnMode
             wordLibrary={wordLibrary}
@@ -182,7 +185,7 @@ const App: React.FC = () => {
           />
         )}
       </main>
-      <footer className="p-2 text-center text-xs text-slate-500 bg-slate-200">
+      <footer style={{ padding: '0.5rem', textAlign: 'center', fontSize: '0.75rem', backgroundColor: '#f9f9f9' }}>
         Expand your vocabulary!
       </footer>
     </div>
