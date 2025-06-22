@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "description": "Word Learner Chrome Extension",
   "scripts": {
-    "build:js": "esbuild index.tsx --bundle --outfile=dist/bundle.js --platform=browser --format=esm --jsx=automatic --loader:.ts=tsx --define:process.env.API_KEY=\\\"${API_KEY}\\\" --sourcemap",
-    "build": "npm run build:js",
-    "watch:js": "esbuild index.tsx --bundle --outfile=dist/bundle.js --platform=browser --format=esm --jsx=automatic --loader:.ts=tsx --define:process.env.API_KEY=\\\"${API_KEY}\\\" --sourcemap --watch",
-    "dev": "npm run build:js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^1.6.0",

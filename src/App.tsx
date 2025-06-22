@@ -30,6 +30,18 @@ const App = (): JSX.Element => {
 
 
   useEffect(() => {
+    // Use this to check for the API key
+    if (import.meta.env.VITE_GEMINI_API_KEY) {
+        console.log("App.tsx: VITE_GEMINI_API_KEY found!");
+        setApiKeyExists(true);
+    } else {
+        console.warn("App.tsx: VITE_GEMINI_API_KEY is NOT available.");
+        setError("Gemini API Key is not configured.");
+        setApiKeyExists(false);
+    }
+  }, []);
+  
+  useEffect(() => {
     const loadInitialData = async () => {
       console.log("App.tsx: loadInitialData started");
       setIsLoading(true);

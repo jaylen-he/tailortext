@@ -37421,7 +37421,7 @@ var GoogleGenAI = class {
 };
 
 // services/geminiService.ts
-var apiKey = "AIzaSyDsXeBew85lOf8YhV0pxbR1o-08SxL9elc";
+var apiKey = "";
 var ai = null;
 if (apiKey) {
   ai = new GoogleGenAI({ apiKey });
@@ -38093,12 +38093,22 @@ var App = () => {
   const [apiKeyExists, setApiKeyExists] = (0, import_react4.useState)(false);
   (0, import_react4.useEffect)(() => {
     console.log("App.tsx: App component mounted and initial useEffect running");
-    if ("AIzaSyDsXeBew85lOf8YhV0pxbR1o-08SxL9elc") {
+    if ("") {
       console.log("App.tsx: API_KEY found in process.env");
       setApiKeyExists(true);
     } else {
       console.warn("App.tsx: API_KEY from process.env is NOT available. Gemini features may not work.");
       setError("Gemini API Key is not configured. This key should be embedded during the build process.");
+      setApiKeyExists(false);
+    }
+  }, []);
+  (0, import_react4.useEffect)(() => {
+    if (import.meta.env.VITE_GEMINI_API_KEY) {
+      console.log("App.tsx: VITE_GEMINI_API_KEY found!");
+      setApiKeyExists(true);
+    } else {
+      console.warn("App.tsx: VITE_GEMINI_API_KEY is NOT available.");
+      setError("Gemini API Key is not configured.");
       setApiKeyExists(false);
     }
   }, []);

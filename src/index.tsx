@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App'; // Changed from { App } to App
+import './input.css';
 
 console.log("index.tsx: Script started"); // For diagnostics
 

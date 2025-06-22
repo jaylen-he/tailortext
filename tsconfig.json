@@ -10,10 +10,9 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
     "isolatedModules": true,
-    "moduleDetection": "force",
     "noEmit": true,
-    "allowJs": true,
     "jsx": "react-jsx",
 
     /* Linting */
@@ -21,10 +20,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    //"noUncheckedSideEffectImports": true,
 
+    /* Path Aliases - Needs baseUrl */
+    "baseUrl": ".",
     "paths": {
-      "@/*" :  ["./*"]
+      "@/*" :  ["./src/*"] // This tells TS where to find types for the '@' alias
     }
-  }
+  },
+  "include": [
+    "src" // This tells TS to check all files in the 'src' directory
+  ],
+  "references": [
+    { "path": "./tsconfig.node.json" } // Standard for Vite
+  ]
 }
