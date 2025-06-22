@@ -194,13 +194,16 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Sound button functionality
-const soundBtn = document.querySelector('.sound-btn');
-soundBtn.addEventListener('click', () => {
-    // Add pronunciation functionality here
-    console.log('Playing pronunciation for:', words[currentWordIndex].word);
-    // You can integrate with Web Speech API or Google Translate TTS here
-    alert("This is a warning message!")
+// Back button functionality
+const backBtn = document.querySelector('.sound-btn');
+backBtn.addEventListener('click', () => {
+    currentWordIndex = (currentWordIndex - 1) % words.length;
+
+    if (currentMode === 'learn') {
+        updateLearnContent();
+    } else {
+        updateQuizContent();
+    }
 });
 
 // Next button functionality
