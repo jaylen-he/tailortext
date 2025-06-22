@@ -1,0 +1,17 @@
+
+{
+  "name": "vite-chrome-extension",
+  "version": "1.0.0",
+  "description": "A Chrome extension using Vite and Google GenAI",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^0.4.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
