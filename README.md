@@ -1,8 +1,6 @@
 # 🐬 TailorText – A language learning extension integrated and tailored to your daily life
 
-TailorText is a Chrome extension that turns any article you're reading into an interactive, AI-powered language learning experience. It pulls words from real-world content, translates them, and quizzes you — all from your browser.
-
-> Built using the Gemini API (Google GenAI)
+TailorText is a Chrome extension that turns any article you're reading into an interactive, AI-powered language learning experience. It pulls words from real-world content, translates them, and quizzes you, all from your browser.
 
 ---
 
@@ -34,5 +32,5 @@ TailorText is a Chrome extension that turns any article you're reading into an i
 4. Click **Load unpacked**
 5. Select the folder where you placed this project
 
-✅ You’ll see the TailorText dolphin icon in your extensions bar!
+✅ The TailorText dolphin icon will appear in your extensions bar!
 
