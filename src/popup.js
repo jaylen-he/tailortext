@@ -1,4 +1,7 @@
-const apiKey = "AIzaSyAhfVe5xdFLaTxQtjl_Ko8G6QVFvNv_U9E";
+import dotenv from "dotenv";
+dotenv.config();
+
+const apiKey = process.env.API_KEY;
 
 import { GoogleGenAI } from "@google/genai";
 
